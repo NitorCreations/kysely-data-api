@@ -1,0 +1,15 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "singleQuote": false,
+  "printWidth": 80,
+  "semi": true,
+  "trailingComma": "es5",
+  "sortPackageJson": false,
+  "ignorePatterns": [
+    ".git",
+    "dist",
+    "node_modules",
+    "pnpm-lock.yaml",
+    "tsconfig.json"
+  ]
+}

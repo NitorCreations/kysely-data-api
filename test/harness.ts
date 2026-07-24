@@ -1,5 +1,11 @@
 import { RDSData } from "@aws-sdk/client-rds-data";
-import { ColumnType, Generated, Kysely, Migrator, FileMigrationProvider } from "kysely";
+import {
+  ColumnType,
+  Generated,
+  Kysely,
+  Migrator,
+  FileMigrationProvider,
+} from "kysely";
 import { DataApiDialect } from "../src";
 import { DataApiDriverConfig } from "../src/data-api-driver";
 import path from "path";
@@ -46,31 +52,28 @@ interface Database {
 export const db = new Kysely<Database>({ dialect });
 
 export async function migrate() {
-  await opts.client
-    .executeStatement({
-      sql: `SELECT pg_terminate_backend(pid)
+  await opts.client.executeStatement({
+    sql: `SELECT pg_terminate_backend(pid)
       FROM pg_stat_activity
       WHERE pid <> pg_backend_pid() AND datname = '${TEST_DATABASE}'`,
-      database: "postgres",
-      secretArn: opts.secretArn,
-      resourceArn: opts.resourceArn,
-    });
+    database: "postgres",
+    secretArn: opts.secretArn,
+    resourceArn: opts.resourceArn,
+  });
 
-  await opts.client
-    .executeStatement({
-      sql: `DROP DATABASE IF EXISTS ${TEST_DATABASE}`,
-      database: "postgres",
-      secretArn: opts.secretArn,
-      resourceArn: opts.resourceArn,
-    });
+  await opts.client.executeStatement({
+    sql: `DROP DATABASE IF EXISTS ${TEST_DATABASE}`,
+    database: "postgres",
+    secretArn: opts.secretArn,
+    resourceArn: opts.resourceArn,
+  });
 
-  await opts.client
-    .executeStatement({
-      sql: `CREATE DATABASE ${TEST_DATABASE}`,
-      database: "postgres",
-      secretArn: opts.secretArn,
-      resourceArn: opts.resourceArn,
-    });
+  await opts.client.executeStatement({
+    sql: `CREATE DATABASE ${TEST_DATABASE}`,
+    database: "postgres",
+    secretArn: opts.secretArn,
+    resourceArn: opts.resourceArn,
+  });
 
   const migrator = new Migrator({
     db,
@@ -79,7 +82,7 @@ export async function migrate() {
       path,
       migrationFolder: path.join(__dirname, "migrations"),
     }),
-  })
+  });
 
   const { error, results } = await migrator.migrateToLatest();
 
@@ -89,7 +92,7 @@ export async function migrate() {
     } else if (it.status === "Error") {
       console.error(`failed to execute migration "${it.migrationName}"`);
     }
-  })
+  });
 
   if (error) {
     console.error("failed to migrate");

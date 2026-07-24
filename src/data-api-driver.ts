@@ -95,11 +95,7 @@ class DataApiConnection implements DatabaseConnection {
       const numAffectedRows = BigInt(r.numberOfRecordsUpdated || 0);
 
       return {
-        // @ts-ignore replaces `QueryResult.numUpdatedOrDeletedRows` in kysely >= 0.23
-        // following https://github.com/koskimas/kysely/pull/188
         numAffectedRows,
-        // deprecated in kysely >= 0.23, keep for backward compatibility.
-        numUpdatedOrDeletedRows: numAffectedRows,
         insertId:
           r.generatedFields && r.generatedFields.length > 0
             ? BigInt(r.generatedFields[0].longValue!)
@@ -116,13 +112,13 @@ class DataApiConnection implements DatabaseConnection {
             const key = label || name;
             let value = val.isNull
               ? null
-              : val.stringValue ??
+              : (val.stringValue ??
                 val.doubleValue ??
                 val.longValue ??
                 val.booleanValue ??
                 this.#unmarshallArrayValue(val.arrayValue) ??
                 val.blobValue ??
-                null; // FIXME: should throw an error here?
+                null); // FIXME: should throw an error here?
 
             if (typeof value === "string" && typeName) {
               const typeNameSafe = typeName.toLocaleLowerCase();
@@ -150,7 +146,7 @@ class DataApiConnection implements DatabaseConnection {
     throw new Error("Data API does not support streaming");
   }
 
-  #unmarshallArrayValue(arrayValue: ArrayValue | undefined): unknown {
+  #unmarshallArrayValue(arrayValue: ArrayValue | null | undefined): unknown {
     if (!arrayValue) {
       return undefined;
     }

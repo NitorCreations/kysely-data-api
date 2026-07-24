@@ -33,42 +33,40 @@ export class MysqlDataApiQueryCompiler extends MysqlQueryCompiler {
 
 function serialize(value: unknown): Pick<SqlParameter, "typeHint" | "value"> {
   switch (typeof value) {
-  case "bigint":
-    return { value: { doubleValue: Number(value) } };
-  case "boolean":
-    return { value: { booleanValue: value } };
-  case "number":
-    if (Number.isInteger(value))
-      return { value: { longValue: value } };
-    else
-      return { value: { doubleValue: value } };
-  case "object":
-    if (value == null)
-      return { value: { isNull: true }};
-    else if (Buffer.isBuffer(value))
-      return { value: { blobValue: value } };
-    else if (value instanceof Date)
+    case "bigint":
+      return { value: { doubleValue: Number(value) } };
+    case "boolean":
+      return { value: { booleanValue: value } };
+    case "number":
+      if (Number.isInteger(value)) return { value: { longValue: value } };
+      else return { value: { doubleValue: value } };
+    case "object":
+      if (value == null) return { value: { isNull: true } };
+      else if (Buffer.isBuffer(value)) return { value: { blobValue: value } };
+      else if (value instanceof Date)
+        return {
+          typeHint: "TIMESTAMP",
+          value: { stringValue: fixISOString(value.toISOString()) },
+        };
+      else if (
+        (value as RSU)?.value &&
+        isValueObject((value as RSU).value as RSU)
+      ) {
+        if (
+          (value as RSU).typeHint &&
+          ((value as RSU).value as RSU).stringValue &&
+          typeof ((value as RSU).value as RSU).stringValue === "string"
+        )
+          ((value as RSU).value as RSU).stringValue = fixStringValue(
+            (value as RSS).typeHint as SqlParameter["typeHint"],
+            ((value as RSU).value as RSS).stringValue
+          );
+        return value;
+      } else break;
+    case "string":
       return {
-        typeHint: "TIMESTAMP",
-        value: { stringValue: fixISOString(value.toISOString()) },
+        value: { stringValue: value },
       };
-    else if ((value as RSU)?.value && isValueObject((value as RSU).value as RSU)) {
-      if (
-        (value as RSU).typeHint && ((value as RSU).value as RSU).stringValue
-        && typeof ((value as RSU).value as RSU).stringValue === "string"
-      )
-        ((value as RSU).value as RSU).stringValue = fixStringValue(
-          (value as RSS).typeHint as SqlParameter["typeHint"],
-          ((value as RSU).value as RSS).stringValue,
-        );
-      return value;
-    }
-    else
-      break;
-  case "string":
-    return {
-      value: { stringValue: value },
-    };
   }
 
   throw new QueryCompilerError("Could not serialize value");
@@ -76,15 +74,15 @@ function serialize(value: unknown): Pick<SqlParameter, "typeHint" | "value"> {
 
 function fixStringValue(typeHint: SqlParameter["typeHint"], value: string) {
   switch (typeHint) {
-  case "DATE":
-    return parseToISOString(value).slice(0, 10);
-  case "TIME":
-    if (value.match(/^\d{4}-\d{2}-\d{2}/)) {
-      return parseToISOString(value).slice(11, 23);
-    }
-    return fixTimeString(value);
-  case "TIMESTAMP":
-    return fixISOString(parseToISOString(value));
+    case "DATE":
+      return parseToISOString(value).slice(0, 10);
+    case "TIME":
+      if (value.match(/^\d{4}-\d{2}-\d{2}/)) {
+        return parseToISOString(value).slice(11, 23);
+      }
+      return fixTimeString(value);
+    case "TIMESTAMP":
+      return fixISOString(parseToISOString(value));
   }
   return value;
 }
@@ -128,8 +126,20 @@ class QueryCompilerError extends Error {
   }
 }
 
-const arrayKeys = ["booleanValues", "doubleValues", "longValues", "stringValues"];
-const primitiveKeys = ["blobValue", "booleanValue", "doubleValue", "isNull", "longValue", "stringValue"];
+const arrayKeys = [
+  "booleanValues",
+  "doubleValues",
+  "longValues",
+  "stringValues",
+];
+const primitiveKeys = [
+  "blobValue",
+  "booleanValue",
+  "doubleValue",
+  "isNull",
+  "longValue",
+  "stringValue",
+];
 
 type RSS = Record<string, string>;
 type RSU = Record<string, unknown>;

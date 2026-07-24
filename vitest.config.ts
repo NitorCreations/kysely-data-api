@@ -4,11 +4,11 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    testTimeout: 90000
+    testTimeout: 90000,
   },
   resolve: {
     alias: {
-      "@serverless-stack/lambda": "./src"
-    }
-  }
+      "@serverless-stack/lambda": "./src",
+    },
+  },
 });

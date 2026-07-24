@@ -21,6 +21,10 @@
     "clean": "rm -rf dist && rm -rf test/dist",
     "release": "pnpm build && pnpm changeset publish",
     "build": "pnpm clean && tsc",
+    "prepublishOnly": "pnpm build",
+    "typecheck": "tsc --noEmit",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
     "test": "AWS_SDK_LOAD_CONFIG=1 vitest"
   },
   "devDependencies": {
@@ -30,8 +34,8 @@
     "@tsconfig/node24": "^24.0.4",
     "@types/node": "^24.13.3",
     "kysely": "0.29.3",
+    "oxfmt": "0.59.0",
     "perf_hooks": "^0.0.1",
-    "prettier": "^2.8.4",
     "typescript": "^6.0.3",
     "vitest": "^0.18.1"
   },

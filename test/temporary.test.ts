@@ -21,10 +21,7 @@ const PERSON_ALIAS = {
 };
 
 it("insert and read", async () => {
-  await db
-    .insertInto("person")
-    .values(PERSON)
-    .execute();
+  await db.insertInto("person").values(PERSON).execute();
 
   const result = await db.selectFrom("person").selectAll().execute();
   expect(result).toHaveLength(1);
@@ -32,10 +29,7 @@ it("insert and read", async () => {
 });
 
 it("alias return", async () => {
-  await db
-    .insertInto("person")
-    .values(PERSON)
-    .execute();
+  await db.insertInto("person").values(PERSON).execute();
 
   const result = await db
     .selectFrom("person")
@@ -73,10 +67,7 @@ it("join", async () => {
 
 it("transaction", async () => {
   await db.transaction().execute(async (tx) => {
-    await tx
-      .insertInto("person")
-      .values(PERSON)
-      .execute();
+    await tx.insertInto("person").values(PERSON).execute();
   });
 
   const result = await db.selectFrom("person").selectAll().execute();

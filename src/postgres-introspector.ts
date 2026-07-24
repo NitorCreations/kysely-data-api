@@ -1,11 +1,14 @@
 import {
   DatabaseIntrospector,
-  DatabaseMetadata,
   DatabaseMetadataOptions,
   SchemaMetadata,
   TableMetadata,
 } from "kysely";
-import { DEFAULT_MIGRATION_LOCK_TABLE, DEFAULT_MIGRATION_TABLE } from "kysely";
+// Kysely 0.28+ moved these migration constants out of the package root into the `kysely/migration` subpath.
+import {
+  DEFAULT_MIGRATION_LOCK_TABLE,
+  DEFAULT_MIGRATION_TABLE,
+} from "kysely/migration";
 import { Kysely } from "kysely";
 import { sql } from "kysely";
 
@@ -89,44 +92,38 @@ export class PostgresIntrospector implements DatabaseIntrospector {
     return this.#parseTableMetadata(rawColumns);
   }
 
-  async getMetadata(
-    options?: DatabaseMetadataOptions
-  ): Promise<DatabaseMetadata> {
-    return {
-      tables: await this.getTables(options),
-    };
-  }
-
   #parseTableMetadata(columns: RawColumnMetadata[]): TableMetadata[] {
-    return columns.reduce<TableMetadata[]>((tables, it) => {
+    const tables: TableMetadata[] = [];
+
+    for (const it of columns) {
       let table = tables.find(
         (tbl) => tbl.name === it.table && tbl.schema === it.schema
       );
 
       if (!table) {
-        table = Object.freeze({
+        // The query only returns regular tables ('r') and views ('v'),
+        // so foreign tables never appear here.
+        table = {
           name: it.table,
           isView: it.is_view,
+          isForeign: false,
           schema: it.schema,
           columns: [],
-        });
-
+        };
         tables.push(table);
       }
 
-      table.columns.push(
-        Object.freeze({
-          name: it.column,
-          dataType: it.type,
-          dataTypeSchema: it.type_schema,
-          isNullable: !it.not_null,
-          isAutoIncrementing: !!it.auto_incrementing,
-          hasDefaultValue: it.has_default,
-        })
-      );
+      table.columns.push({
+        name: it.column,
+        dataType: it.type,
+        dataTypeSchema: it.type_schema,
+        isNullable: !it.not_null,
+        isAutoIncrementing: !!it.auto_incrementing,
+        hasDefaultValue: it.has_default,
+      });
+    }
 
-      return tables;
-    }, []);
+    return tables;
   }
 }
 
