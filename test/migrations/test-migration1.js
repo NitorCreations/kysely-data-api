@@ -1,4 +1,4 @@
-async function up(db) {
+export async function up(db) {
   await db.schema
     .createTable("person")
     .addColumn("id", "serial", (col) => col.primaryKey())
@@ -24,12 +24,7 @@ async function up(db) {
     .execute();
 }
 
-async function down(db) {
+export async function down(db) {
   await db.schema.dropTable("person").execute();
   await db.schema.dropTable("pet").execute();
 }
-
-module.exports = {
-  up,
-  down,
-};
