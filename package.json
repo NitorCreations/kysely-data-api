@@ -37,7 +37,7 @@
     "oxfmt": "0.59.0",
     "perf_hooks": "0.0.1",
     "typescript": "6.0.3",
-    "vitest": "0.18.1"
+    "vitest": "3.2.6"
   },
   "peerDependencies": {
     "@aws-sdk/client-rds-data": "3.x",
