@@ -1,0 +1,39 @@
+exclude: ^dist/
+fail_fast: false
+repos:
+  - repo: builtin
+    hooks:
+      - id: check-added-large-files
+        priority: 10
+      - id: check-case-conflict
+        priority: 10
+      - id: check-json
+        priority: 10
+      - id: check-merge-conflict
+        priority: 10
+      - id: check-yaml
+        priority: 10
+      - id: end-of-file-fixer
+        priority: 10
+      - id: mixed-line-ending
+        priority: 10
+      - id: trailing-whitespace
+        priority: 10
+
+  - repo: local
+    hooks:
+      - id: format
+        name: format
+        entry: pnpm run format
+        language: system
+        pass_filenames: false
+        always_run: true
+        priority: 10
+
+      - id: typecheck
+        name: typecheck
+        entry: pnpm run typecheck
+        language: system
+        pass_filenames: false
+        files: \.ts$
+        priority: 10
