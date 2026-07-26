@@ -17,6 +17,7 @@
     "access": "restricted"
   },
   "license": "MIT",
+  "packageManager": "pnpm@11.17.0",
   "scripts": {
     "clean": "rm -rf dist && rm -rf test/dist",
     "release": "pnpm build && pnpm changeset publish",
@@ -25,7 +26,8 @@
     "typecheck": "tsc --noEmit",
     "format": "oxfmt",
     "format:check": "oxfmt --check",
-    "test": "AWS_SDK_LOAD_CONFIG=1 vitest"
+    "test": "AWS_SDK_LOAD_CONFIG=1 vitest",
+    "test:unit": "vitest run test/data-api-query-compiler.test.ts"
   },
   "devDependencies": {
     "@aws-sdk/client-rds-data": "3.1090.0",
