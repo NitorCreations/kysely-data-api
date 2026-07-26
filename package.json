@@ -1,6 +1,6 @@
 {
   "name": "@nitorcreations/kysely-data-api",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "repository": "git@github.com:NitorCreations/kysely-data-api.git",
   "type": "module",
   "module": "./dist/index.js",
