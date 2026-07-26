@@ -1,5 +1,9 @@
 name: Release
 
+permissions:
+  contents: write
+  pull-requests: write
+
 on:
   # Publishing is manual-only: trigger from the Actions tab when a release
   # is ready. Automatic publishing on push to master is intentionally disabled.
